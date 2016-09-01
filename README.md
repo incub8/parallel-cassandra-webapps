@@ -2,6 +2,10 @@ What is this
 ----
 This is an example application demonstrating wrong behaviour when stopping a TomEE that has two applications running that both use the Datastax driver for cassandra.
 
+What has changed since the [initial test case](https://github.com/schroenser/parallel-cassandra-webapps/tree/initial-test-case)
+----
+The producers and the corresponding disposers for `Cluster` and `Session` were replaced by a CDI extension that is able to register beans for `Cluster` and `Session` in the application scope.
+
 How to use this
 ----
 1. Build and start using maven: `mvn clean package cassandra:start tomee:run cassandra:stop`
@@ -11,4 +15,4 @@ How to use this
 
 The wrong behaviour
 ----
-Only one of the applications mangages to call the dispose methods for its `Session` and `Cluster` instances. After that, the TomEE starts to complain about unstopped threads and unremoved `ThreadLocal` instances. The dispose methods of the second application are not called.
+This change gets rid of some of the exceptions concerning `ThreadLocal`s, but the warnings about unstopped threads remain. There is still only one call to close the `Session` and the `Cluster` in the log file, before the warnings are issued. The second pair of `Cluster` / `Session` instances is never closed.
