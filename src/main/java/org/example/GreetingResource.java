@@ -9,8 +9,6 @@ import javax.ws.rs.core.MediaType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.datastax.driver.core.Session;
-
 @Path("greeting")
 @Produces(MediaType.TEXT_PLAIN)
 public class GreetingResource
@@ -18,7 +16,7 @@ public class GreetingResource
     private static final Logger log = LoggerFactory.getLogger(GreetingResource.class);
 
     @Inject
-    private Session session;
+    private CassandraDatabase cassandraDatabase;
 
     @GET
     public String get()
@@ -31,8 +29,7 @@ public class GreetingResource
 
     private String readGreetingFromCassandra()
     {
-        return session.execute("select greeting from greetingkeyspace.greetings where id = 'greetingId'")
-            .one()
-            .getString("greeting");
+        return cassandraDatabase.getSession().execute(
+            "select greeting from greetingkeyspace.greetings where id = 'greetingId'").one().getString("greeting");
     }
 }
